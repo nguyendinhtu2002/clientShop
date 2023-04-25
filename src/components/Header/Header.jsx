@@ -14,6 +14,8 @@ const Header = () => {
   const dispatch = useDispatch()
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
+  const [show, setShow] = useState(false);
+
   const userLogin = useSelector((state) => state.user);
   const { email,usename } = userLogin;
   const handleLogout = async () => {
@@ -28,7 +30,8 @@ const Header = () => {
       });
     }
   };
- 
+  const toggleChecked = () => setShow(value => !value);
+
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -97,9 +100,9 @@ const Header = () => {
                 )}
                 {  (email || user) && (
                   <div className='header-right'>
-                    <img id="avatarButton" type="button" data-dropdown-toggle="userDropdown" data-dropdown-placement="bottom-start" className="w-10 h-10 rounded-full cursor-pointer" src="https://flowbite.com/docs/images/people/profile-picture-5.jpg" alt="User dropdown"/>
+                    <img id="avatarButton" type="button"  onClick={toggleChecked} className="w-10 h-10 rounded-full cursor-pointer" src="https://flowbite.com/docs/images/people/profile-picture-5.jpg" alt="User dropdown"/>
 
-                      <div id="userDropdown" className="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600">
+                      <div id="userDropdown" className={show?"z-10 bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600 block absolute  ":"z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600"}>
                         <div className="px-4 py-3 text-xl text-gray-900 dark:text-white">
                           <div>{usename}</div>
                         </div>
