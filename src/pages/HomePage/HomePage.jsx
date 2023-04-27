@@ -19,20 +19,16 @@ const HomePage = () => {
 
   useEffect(() => {
     dispatch(
-      fetchAsyncProducts({
-        limit: 25,
-        skip: (pageNumber - 1) * 25,
-      })
+      fetchAsyncProducts()
     );
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [location]);
 
   const products = useSelector(getAllProducts);
   const productStatus = useSelector(getAllProductsStatus);
-
   // Ngẫu nhiên hóa các sản phẩm trong danh sách
   const tempProducts = [];
-  if (products.length > 0) {
+  if (products?.length > 0) {
     for (let i in products) {
       let randomIndex = Math.floor(Math.random() * products.length);
 

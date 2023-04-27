@@ -5,7 +5,7 @@ import "./Product.scss";
 
 const Product = ({ product }) => {
   return (
-    <Link to={`/product/${product?.id}`} key={product?.id}>
+    <Link to={`/product/${product?._id}`} key={product?._id}>
       <div className="product-item bg-white">
         <div className="category">{product?.category}</div>
         <div className="product-item-img">

@@ -26,7 +26,7 @@ const Navbar = () => {
 
   useEffect(() => {
     if (debouncedSearchTerm) {
-      fetch(`https://dummyjson.com/products/search?q=${debouncedSearchTerm}&limit=5`)
+      fetch(`http://localhost:5000/api/v1/product/search?q=${debouncedSearchTerm}`)
         .then((res) => res.json())
         .then((res) => setListSearch(res.products));
     }
@@ -75,7 +75,7 @@ const Navbar = () => {
                 <div className="search-popover">
                   {listSearch.map((e, i) => {
                     return (
-                      <Link key={i} to={`/product/${e.id}`}>
+                      <Link key={i} to={`/product/${e._id}`}>
                         <li className="search-popover-item">{e.title}</li>
                       </Link>
                     );

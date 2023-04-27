@@ -4,16 +4,27 @@ import { useSelector, useDispatch } from "react-redux";
 import { shopping_cart } from "../../utils/images";
 import { Link } from "react-router-dom";
 import { formatPrice } from "../../utils/helpers";
-import { getAllCarts, removeFromCart, toggleCartQty, clearCart } from "../../store/cartSlice";
+import {
+  getAllCarts,
+  removeFromCart,
+  toggleCartQty,
+  clearCart,
+} from "../../store/cartSlice";
 import StripeCheckout from "react-stripe-checkout";
+import axios from "axios";
 
 const CartPage = () => {
   const dispatch = useDispatch();
   const carts = useSelector(getAllCarts);
   const { itemsCount, totalAmount } = useSelector((state) => state.cart);
-  const onToken = (token) => {
+  const {id} = useSelector((state) => state.user);
+  const onToken = async (token) => {
     console.log(token);
-    dispatch(clearCart());
+    await axios
+      .post("http://localhost:5000/api/v1/pay", { carts, token,id })
+      .then((res) => {
+        dispatch(clearCart());
+      });
   };
 
   const handleCheckout = () => {};
@@ -23,7 +34,9 @@ const CartPage = () => {
       <div className="container my-5">
         <div className="empty-cart flex justify-center align-center flex-column font-manrope">
           <img src={shopping_cart} alt="" />
-          <span className="fw-6 fs-15 text-gray">Giỏ hàng của bạn đang trống.</span>
+          <span className="fw-6 fs-15 text-gray">
+            Giỏ hàng của bạn đang trống.
+          </span>
           <Link to="/" className="shopping-btn bg-orange text-white fw-5">
             Đi mua sắm ngay bây giờ
           </Link>
@@ -70,14 +83,18 @@ const CartPage = () => {
                     <span className="cart-ctxt">{cart?.title}</span>
                   </div>
                   <div className="cart-ctd">
-                    <span className="cart-ctxt">{formatPrice(cart?.discountedPrice)}</span>
+                    <span className="cart-ctxt">
+                      {formatPrice(cart?.discountedPrice)}
+                    </span>
                   </div>
                   <div className="cart-ctd">
                     <div className="qty-change flex align-center">
                       <button
                         type="button"
                         className="qty-decrease flex align-center justify-center"
-                        onClick={() => dispatch(toggleCartQty({ id: cart?.id, type: "DEC" }))}
+                        onClick={() =>
+                          dispatch(toggleCartQty({ id: cart?.id, type: "DEC" }))
+                        }
                       >
                         <i className="fas fa-minus"></i>
                       </button>
@@ -89,7 +106,9 @@ const CartPage = () => {
                       <button
                         type="button"
                         className="qty-increase flex align-center justify-center"
-                        onClick={() => dispatch(toggleCartQty({ id: cart?.id, type: "INC" }))}
+                        onClick={() =>
+                          dispatch(toggleCartQty({ id: cart?.id, type: "INC" }))
+                        }
                       >
                         <i className="fas fa-plus"></i>
                       </button>
@@ -130,15 +149,23 @@ const CartPage = () => {
 
             <div className="cart-cfoot-r flex flex-column justify-end">
               <div className="total-txt flex align-center justify-end">
-                <div className="font-manrope fw-5">Total ({itemsCount}) items: </div>
-                <span className="text-orange fs-22 mx-2 fw-6">{formatPrice(totalAmount)}</span>
+                <div className="font-manrope fw-5">
+                  Total ({itemsCount}) items:{" "}
+                </div>
+                <span className="text-orange fs-22 mx-2 fw-6">
+                  {formatPrice(totalAmount)}
+                </span>
               </div>
 
               <StripeCheckout
                 amount={totalAmount * 100}
                 token={onToken}
+                shippingAddress
+                // billingAddress={false}
+                zipCode={false}
+
                 stripeKey="pk_test_51MqDa6CnJIa4Gyt64yUggYm6IjolIpWFmj2kIZAgWxf1poz5FwgIKs4ayEKOnt8OhemksZA7f2ohRyBSXlw94Nae00e7vs3NvG"
-              />
+              ></StripeCheckout>
             </div>
           </div>
         </div>
